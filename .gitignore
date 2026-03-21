@@ -1,0 +1,30 @@
+docs/plans/
+.gradle/
+.idea/
+build/
+*/build/
+local.properties
+*.iml
+.DS_Store
+*.keystore
+vectors.db
+
+# Codex local configuration
+.codex/
+
+# AI agent local tooling
+.agents/
+.claude/
+.claude-flow/
+.swarm/
+.mcp.json
+AGENTS.md
+CLAUDE.md
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Claude Code local config
+CLAUDE.local.md
