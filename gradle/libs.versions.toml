@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.22"
-ksp = "1.9.22-1.0.17"
+ksp = "1.9.25-1.0.20"
 coroutines = "1.7.3"
 serialization = "1.6.3"
 okhttp = "4.12.0"
