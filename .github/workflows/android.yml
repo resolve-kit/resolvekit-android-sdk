@@ -17,6 +17,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Validate agent-facing docs map
+        run: bash scripts/check_agent_docs.sh
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
