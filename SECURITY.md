@@ -4,14 +4,17 @@
 
 Do not open public GitHub issues for security problems.
 
-Report vulnerabilities by emailing `hello@resolvekit.app` with:
+Use GitHub private vulnerability reporting for this repository:
 
-- a short description of the issue
+- https://github.com/resolve-kit/resolvekit-android-sdk/security/advisories/new
+
+Please include:
+
+- affected version or commit
 - affected module or file paths
 - reproduction steps or proof of concept
 - impact assessment if known
-
-If you need encrypted communication, mention that in the initial email and we will coordinate a secure channel.
+- any known mitigations
 
 ## Scope
 
