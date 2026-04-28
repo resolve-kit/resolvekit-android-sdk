@@ -74,7 +74,7 @@ repositories {
     google()
     mavenCentral()
     maven {
-        url = uri("https://maven.pkg.github.com/Nights-Are-Late/resolvekit-android-sdk")
+        url = uri("https://maven.pkg.github.com/resolve-kit/resolvekit-android-sdk")
         credentials {
             username = providers.gradleProperty("gpr.user").orNull ?: System.getenv("GITHUB_ACTOR")
             password = providers.gradleProperty("gpr.key").orNull ?: System.getenv("GITHUB_TOKEN")
