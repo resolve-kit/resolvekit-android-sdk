@@ -11,7 +11,7 @@ import app.resolvekit.core.ResolveKitFunctionPack
  * (e.g. freshly-fetched API keys, current user context) without restarting
  * the runtime.
  *
- * @param baseUrl              Backend base URL. Defaults to the production endpoint.
+ * @param baseUrl              Backend base URL. Defaults to a neutral self-host placeholder.
  * @param apiKeyProvider       Returns the bearer token for API requests. Called on every request.
  * @param deviceIdProvider     Optional stable device identifier. Auto-generated UUID if null.
  * @param llmContextProvider   Custom JSON context forwarded to the LLM (user prefs, location, etc.).
@@ -24,7 +24,7 @@ import app.resolvekit.core.ResolveKitFunctionPack
  * @param functionPacks        Grouped tool modules; all functions in each pack are registered.
  */
 data class ResolveKitConfiguration(
-    val baseUrl: String = "https://agent.resolvekit.app",
+    val baseUrl: String = "https://agent.example.com",
     val apiKeyProvider: () -> String?,
     val deviceIdProvider: (() -> String?)? = null,
     val llmContextProvider: () -> JSONObject = { emptyMap() },

@@ -58,6 +58,12 @@ class ResolveKitRuntimeTest {
     }
 
     @Test
+    fun `configuration defaults to neutral self-host base URL`() {
+        val config = ResolveKitConfiguration(apiKeyProvider = { "test-key" })
+        assertEquals("https://agent.example.com", config.baseUrl)
+    }
+
+    @Test
     fun `setAppearance updates appearanceMode`() {
         val runtime = ResolveKitRuntime(testConfig())
         runtime.setAppearance(app.resolvekit.ui.models.ResolveKitAppearanceMode.DARK)
