@@ -11,31 +11,30 @@ This file is the **table of contents** for coding agents. Keep it short, stable,
 
 ## First Read
 
-1. `README.md` for module model and integration patterns.
-2. `docs/INDEX.md` for architecture and release knowledge.
-3. `docs/agent-first/README.md` for harness principles.
+1.  for module model and integration patterns.
+2.  for architecture and release knowledge.
+3.  for harness principles.
 
 ## Commands
 
-```bash
-./gradlew test :sample:assembleDebug publishToMavenLocal
-```
+
 
 ## Source of Truth Layout
 
-- `sdk/` public SDK facade artifact.
-- `core/` shared types and contracts.
-- `networking/` API + stream transport.
-- `ui/` runtime and chat surfaces.
-- `authoring/` annotation API.
-- `ksp/` KSP processor.
-- `sample/` reference app.
-- `docs/INDEX.md` documentation entry point.
-- `docs/exec-plans/` plan history and tech debt.
+-  public SDK facade artifact.
+-  shared types and contracts.
+-  API + stream transport.
+-  runtime and chat surfaces.
+-  annotation API.
+-  KSP processor.
+-  reference app.
+-  documentation entry point.
+-  plan history and tech debt.
 
 ## Guardrails
 
-- No secrets in repo (`.env`, signing keys, credentials).
+- No secrets in repo (, signing keys, credentials).
 - Maintain binary compatibility assumptions for public SDK APIs.
 - Prefer small dependency upgrades; coordinated sweeps for major versions.
-- Run `bash scripts/check_agent_docs.sh` when changing docs structure.
+- Run  when changing docs structure.
+
