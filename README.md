@@ -1,6 +1,13 @@
 # ResolveKit Android SDK
 
+[![CI](https://github.com/resolve-kit/resolvekit-android-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/resolve-kit/resolvekit-android-sdk/actions/workflows/android.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/app.resolvekit/sdk.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/app.resolvekit/sdk)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Min SDK](https://img.shields.io/badge/minSDK-24-blue.svg)](https://developer.android.com/studio/releases/platforms)
+
 Android SDK for embedding ResolveKit agent chat, tool calling, and host UI surfaces into Android apps.
+
+**Support is moving into the product. ResolveKit is where it lands.**
 
 The repository contains:
 
@@ -24,10 +31,15 @@ The repository contains:
 
 ## Requirements
 
-- JDK 17
-- Android Studio with Android SDK Platform 36
-- Gradle wrapper included in the repo
-- ResolveKit API key if you want to run the sample app against the live backend
+| Requirement | Value |
+| --- | --- |
+| Min SDK | 24 (Android 7.0) |
+| Target SDK | 36 |
+| JDK | 17 |
+| Android Studio | Ladybug+ |
+| Gradle | 8.9+ (wrapper included) |
+| Compose | BOM 2024.12+ |
+| Kotlin | 2.0+ |
 
 ## Installation
 
@@ -175,6 +187,102 @@ supportFragmentManager.beginTransaction()
     .commit()
 ```
 
+## Configuration Reference
+
+`ResolveKitConfiguration` is passed to `ResolveKitRuntime` at initialization and is immutable after that point.
+
+```kotlin
+ResolveKitConfiguration(
+    baseURL: URL = URL("https://agent.example.com"),
+    apiKeyProvider: () -> String?,
+    deviceIDProvider: () -> String? = { null },
+    llmContextProvider: () -> JSONObject = { emptyMap() },
+    availableFunctionNamesProvider: (() -> List<String>)? = null,
+    localeProvider: (() -> String)? = null,
+    functions: List<AnyResolveKitFunction> = emptyList(),
+    context: Context
+)
+```
+
+### `baseURL`
+
+**Type:** `URL` | **Required:** No | **Default:** `https://agent.example.com`
+
+Base URL of the ResolveKit backend. Override only when self-hosting:
+
+```kotlin
+baseURL = URL("https://your-backend.example.com")
+```
+
+### `apiKeyProvider`
+
+**Type:** `() -> String?` | **Required:** Yes
+
+Called at the start of each session. Return `null` or an empty string to block connection.
+
+```kotlin
+apiKeyProvider = { SecureConfig.getApiKey() }
+```
+
+### `deviceIDProvider`
+
+**Type:** `() -> String?` | **Required:** No | **Default:** `{ null }`
+
+Stable device or user identifier used to correlate sessions across app launches. If `null` is returned, the SDK generates and persists a UUID automatically.
+
+```kotlin
+deviceIDProvider = {
+    val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+    prefs.getString("device_id", null) ?: run {
+        val id = UUID.randomUUID().toString()
+        prefs.edit().putString("device_id", id).apply()
+        id
+    }
+}
+```
+
+### `llmContextProvider`
+
+**Type:** `() -> JSONObject` | **Required:** No | **Default:** `{ emptyMap() }`
+
+Custom JSON context sent as `llm_context` during session creation. Use it to pass user preferences, location, app state, or any signal the agent needs at routing time.
+
+### `localeProvider`
+
+**Type:** `(() -> String)?` | **Required:** No | **Default:** `null`
+
+Provides the preferred locale for the chat session as a BCP 47 language tag (e.g. `"en"`, `"lt"`, `"fr-CA"`). If `null`, the SDK resolves locale from system settings.
+
+### `functions`
+
+**Type:** `List<AnyResolveKitFunction>` | **Required:** No | **Default:** `emptyList()`
+
+List of tool functions available to the agent.
+
+## Runtime API
+
+`ResolveKitRuntime` exposes the following state via `StateFlow`:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `messages` | `StateFlow<List<ResolveKitChatMessage>>` | Chat transcript in chronological order |
+| `connectionState` | `StateFlow<ResolveKitConnectionState>` | Current session-stream connection phase |
+| `isTurnInProgress` | `StateFlow<Boolean>` | True while the agent is processing a turn |
+| `pendingToolCall` | `StateFlow<ResolveKitPendingToolCall?>` | Current active tool call awaiting approval |
+| `toolCallChecklist` | `StateFlow<List<ToolCallChecklistItem>>` | Live checklist of tool calls in current batch |
+| `toolCallBatchState` | `StateFlow<ResolveKitToolCallBatchState>` | Aggregate approval state of current batch |
+| `executionLog` | `StateFlow<List<String>>` | Debug log of runtime lifecycle events |
+
+### Connection States
+
+| State | Description |
+| --- | --- |
+| `Disconnected` | Not connected (initial state) |
+| `Connecting` | Establishing WebSocket connection |
+| `Connected` | Session established, ready for chat |
+| `Reconnecting` | Connection lost, attempting reconnect |
+| `Error` | Connection failed with error |
+
 ## Defining Tools
 
 ### Manual tool registration
@@ -211,6 +319,43 @@ class EchoMessage(private val message: String) : ResolveKitFunction {
 ```
 
 The processor generates `EchoMessageResolveKitAdapter`, which can be passed into `ResolveKitConfiguration.functions`.
+
+### Supported Parameter Types
+
+| Kotlin type | JSON Schema type | LLM coercion |
+| --- | --- | --- |
+| `String` | `"string"` | Tolerates numbers/bools |
+| `Boolean` | `"boolean"` | Tolerates `1`/`0`/`"true"`/`"false"` |
+| `Int`, `Long` | `"integer"` | Truncates `3.0 → 3` |
+| `Float`, `Double` | `"number"` | — |
+| `T?` (any of above) | Same as `T`, not in `required` | `null` if key absent |
+| `List<T>` | `"array"` with `"items"` schema | — |
+| `Map<String, V>` | `"object"` | — |
+| Nested `data class` | `"object"` | — |
+
+## ProGuard / R8 Rules
+
+Add these rules to your app's `proguard-rules.pro` to prevent obfuscation of ResolveKit classes:
+
+```proguard
+# ResolveKit
+-keep class app.resolvekit.** { *; }
+-keep class app.resolvekit.core.** { *; }
+-keep class app.resolvekit.ui.** { *; }
+-keep class app.resolvekit.networking.** { *; }
+
+# KSP-generated adapters
+-keep class **ResolveKitAdapter { *; }
+-keep class **_ResolveKitAdapter { *; }
+
+# JSON serialization
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Keep function names for tool dispatch
+-keepnames class app.resolvekit.authoring.** { *; }
+```
 
 ## Android Studio Workflows
 
@@ -270,7 +415,7 @@ Expected release credentials are read from Gradle properties or environment vari
 
 Legacy `OSSRH_USERNAME` and `OSSRH_PASSWORD` are also accepted for compatibility.
 
-For local setup, copy [`.env.example`](/Users/t0405/Developer/resolvekit-android-sdk/.env.example) to `.env` and fill in the values. `.env` is loaded by the publishing script and is gitignored.
+For local setup, copy `.env.example` to `.env` and fill in the values. `.env` is loaded by the publishing script and is gitignored.
 
 For Maven Central releases with Gradle's built-in `maven-publish`, the artifact upload and the Portal release handoff are separate steps. The GitHub Actions workflow performs both automatically. For a local release, run:
 
@@ -286,18 +431,39 @@ curl --fail --silent --show-error \
 
 After the handoff call succeeds, Sonatype may keep the deployment in `PUBLISHING` state for several minutes before the modules appear in Maven Central search.
 
-GitHub Actions publishing is defined in [`.github/workflows/publish.yml`](/Users/t0405/Developer/resolvekit-android-sdk/.github/workflows/publish.yml). GitHub Packages uses `GITHUB_TOKEN`; Maven Central publishing runs only when these repository secrets are configured:
+GitHub Actions publishing is defined in `.github/workflows/publish.yml`. GitHub Packages uses `GITHUB_TOKEN`; Maven Central publishing runs only when these repository secrets are configured:
 
 - `MAVEN_CENTRAL_USERNAME`
 - `MAVEN_CENTRAL_PASSWORD`
 - `SIGNING_KEY_BASE64`
 - `SIGNING_PASSWORD`
 
+## Troubleshooting
+
+### Connection fails with 401
+- Verify your API key starts with `iaa_`
+- Check that `baseURL` points to a running ResolveKit backend
+- Ensure the backend has an app configured for your API key
+
+### Tool calls not appearing in chat
+- Verify functions are registered in `ResolveKitConfiguration.functions`
+- Check that the function name matches exactly (snake_case)
+- Ensure the KSP processor ran: `./gradlew build` should generate `*ResolveKitAdapter` classes
+
+### Compose UI not rendering
+- Ensure `ResolveKitRuntime` is created with a valid `Context`
+- Check that `MaterialTheme` wraps `ResolveKitChatView`
+- Verify Compose BOM version compatibility
+
+### ProGuard crashes in release builds
+- Add the ProGuard rules from the [ProGuard / R8 Rules](#proguard--r8-rules) section above
+- Run `./gradlew :sample:assembleRelease` to test with minification enabled
+
 ## Repository Hygiene
 
 This repo includes:
 
-- `LICENSE`
+- `LICENSE` (MIT)
 - `CONTRIBUTING.md`
 - `SECURITY.md`
 - GitHub issue templates
