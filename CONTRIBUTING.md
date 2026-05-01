@@ -19,7 +19,7 @@ resolvekit.apiKey=iaa_your_key_here
 
 You can also export `RESOLVEKIT_API_KEY` instead of writing it to `local.properties`.
 
-For local publishing credentials, copy [`.env.example`](/Users/t0405/Developer/resolvekit-android-sdk/.env.example) to `.env` and fill in the values you need. Use a base64-encoded private key in `SIGNING_KEY_BASE64`. Keep `.env` local only.
+For local publishing credentials, copy [.env.example](.env.example) to `.env` and fill in the values you need. Use a base64-encoded private key in `SIGNING_KEY_BASE64`. Keep `.env` local only.
 
 ## Validation
 

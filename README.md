@@ -3,7 +3,7 @@
 [![CI](https://github.com/resolve-kit/resolvekit-android-sdk/actions/workflows/android.yml/badge.svg)](https://github.com/resolve-kit/resolvekit-android-sdk/actions/workflows/android.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/app.resolvekit/sdk.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/app.resolvekit/sdk)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Min SDK](https://img.shields.io/badge/minSDK-24-blue.svg)](https://developer.android.com/studio/releases/platforms)
+[![Min SDK](https://img.shields.io/badge/minSDK-26-blue.svg)](https://developer.android.com/studio/releases/platforms)
 
 Android SDK for embedding ResolveKit agent chat, tool calling, and host UI surfaces into Android apps.
 
@@ -33,13 +33,13 @@ The repository contains:
 
 | Requirement | Value |
 | --- | --- |
-| Min SDK | 24 (Android 7.0) |
+| Min SDK | 26 (Android 8.0) |
 | Target SDK | 36 |
 | JDK | 17 |
 | Android Studio | Ladybug+ |
 | Gradle | 8.9+ (wrapper included) |
-| Compose | BOM 2024.12+ |
-| Kotlin | 2.0+ |
+| Compose | BOM 2024.02.00 |
+| Kotlin | 1.9.22 |
 
 ## Installation
 
@@ -193,25 +193,27 @@ supportFragmentManager.beginTransaction()
 
 ```kotlin
 ResolveKitConfiguration(
-    baseURL: URL = URL("https://agent.example.com"),
+    baseUrl: String = "https://agent.example.com",
     apiKeyProvider: () -> String?,
-    deviceIDProvider: () -> String? = { null },
+    deviceIdProvider: () -> String? = { null },
     llmContextProvider: () -> JSONObject = { emptyMap() },
     availableFunctionNamesProvider: (() -> List<String>)? = null,
     localeProvider: (() -> String)? = null,
+    preferredLocalesProvider: (() -> List<String>)? = null,
     functions: List<AnyResolveKitFunction> = emptyList(),
+    functionPacks: List<ResolveKitFunctionPack> = emptyList(),
     context: Context
 )
 ```
 
-### `baseURL`
+### `baseUrl`
 
-**Type:** `URL` | **Required:** No | **Default:** `https://agent.example.com`
+**Type:** `String` | **Required:** No | **Default:** `https://agent.example.com`
 
 Base URL of the ResolveKit backend. Override only when self-hosting:
 
 ```kotlin
-baseURL = URL("https://your-backend.example.com")
+baseUrl = "https://your-backend.example.com"
 ```
 
 ### `apiKeyProvider`
@@ -224,14 +226,14 @@ Called at the start of each session. Return `null` or an empty string to block c
 apiKeyProvider = { SecureConfig.getApiKey() }
 ```
 
-### `deviceIDProvider`
+### `deviceIdProvider`
 
 **Type:** `() -> String?` | **Required:** No | **Default:** `{ null }`
 
 Stable device or user identifier used to correlate sessions across app launches. If `null` is returned, the SDK generates and persists a UUID automatically.
 
 ```kotlin
-deviceIDProvider = {
+deviceIdProvider = {
     val prefs = PreferenceManager.getDefaultSharedPreferences(context)
     prefs.getString("device_id", null) ?: run {
         val id = UUID.randomUUID().toString()
@@ -268,20 +270,29 @@ List of tool functions available to the agent.
 | `messages` | `StateFlow<List<ResolveKitChatMessage>>` | Chat transcript in chronological order |
 | `connectionState` | `StateFlow<ResolveKitConnectionState>` | Current session-stream connection phase |
 | `isTurnInProgress` | `StateFlow<Boolean>` | True while the agent is processing a turn |
-| `pendingToolCall` | `StateFlow<ResolveKitPendingToolCall?>` | Current active tool call awaiting approval |
 | `toolCallChecklist` | `StateFlow<List<ToolCallChecklistItem>>` | Live checklist of tool calls in current batch |
 | `toolCallBatchState` | `StateFlow<ResolveKitToolCallBatchState>` | Aggregate approval state of current batch |
+| `toolCallBatches` | `StateFlow<List<ToolCallChecklistBatch>>` | Historical tool call batches |
+| `lastError` | `StateFlow<String?>` | Last error message |
+| `chatTitle` | `StateFlow<String>` | Chat window title |
+| `messagePlaceholder` | `StateFlow<String>` | Input placeholder text |
+| `appearanceMode` | `StateFlow<ResolveKitAppearanceMode>` | Appearance mode |
+| `currentLocale` | `StateFlow<String>` | Current session locale |
+| `chatTheme` | `StateFlow<ChatTheme?>` | Active chat theme |
 | `executionLog` | `StateFlow<List<String>>` | Debug log of runtime lifecycle events |
 
 ### Connection States
 
 | State | Description |
 | --- | --- |
-| `Disconnected` | Not connected (initial state) |
-| `Connecting` | Establishing WebSocket connection |
-| `Connected` | Session established, ready for chat |
-| `Reconnecting` | Connection lost, attempting reconnect |
-| `Error` | Connection failed with error |
+| `IDLE` | Not connected (initial state) |
+| `REGISTERING` | Registering device with backend |
+| `CONNECTING` | Establishing WebSocket connection |
+| `ACTIVE` | Session established, ready for chat |
+| `RECONNECTING` | Connection lost, attempting reconnect |
+| `RECONNECTED` | Successfully reconnected after loss |
+| `FAILED` | Connection failed with error |
+| `BLOCKED` | Connection blocked (e.g., invalid API key) |
 
 ## Defining Tools
 
@@ -314,7 +325,7 @@ object GetCurrentTime : AnyResolveKitFunction {
     requiresApproval = false
 )
 class EchoMessage(private val message: String) : ResolveKitFunction {
-    override suspend fun perform(): Any = message
+    override suspend fun perform(): Any? = message
 }
 ```
 
@@ -346,7 +357,6 @@ Add these rules to your app's `proguard-rules.pro` to prevent obfuscation of Res
 
 # KSP-generated adapters
 -keep class **ResolveKitAdapter { *; }
--keep class **_ResolveKitAdapter { *; }
 
 # JSON serialization
 -keepclassmembers class * {
@@ -442,7 +452,7 @@ GitHub Actions publishing is defined in `.github/workflows/publish.yml`. GitHub 
 
 ### Connection fails with 401
 - Verify your API key starts with `iaa_`
-- Check that `baseURL` points to a running ResolveKit backend
+- Check that `baseUrl` points to a running ResolveKit backend
 - Ensure the backend has an app configured for your API key
 
 ### Tool calls not appearing in chat

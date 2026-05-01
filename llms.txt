@@ -1,0 +1,14 @@
+---
+title: "ResolveKit Android SDK"
+---
+ResolveKit Android SDK - Embedded AI resolution framework for Android.
+
+Key files:
+- README.md: Integration guide and API reference
+- CHANGELOG.md: Version history
+- ui/src/main/kotlin/app/resolvekit/ui/ResolveKitConfiguration.kt: Configuration
+- ui/src/main/kotlin/app/resolvekit/ui/ResolveKitRuntime.kt: Main runtime
+- authoring/src/main/kotlin/app/resolvekit/authoring/ResolveKit.kt: @ResolveKit annotation
+
+Quick start: Add Gradle dependency, use @ResolveKit annotation on functions, present ResolveKitChat composable.
+Requires: Android 8.0 (API 26)+, Kotlin 1.9.22, Compose BOM 2024.02.00

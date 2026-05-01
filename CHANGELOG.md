@@ -13,14 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compose chat view rendering in fragment hosts
 
 ### Changed
--  now auto-starts runtime on composition
--  defaults to auto-generated UUID if null
+- `ResolveKitChatView` now auto-starts runtime on composition
+- `deviceIdProvider` defaults to auto-generated UUID if null
 
 ### Added
--  for View-based app integration
--  KSP annotation for typed tool authoring
--  for custom JSON context injection
--  for per-session tool scoping
+- `ResolveKitChatActivity` for View-based app integration
+- `@ResolveKit` KSP annotation for typed tool authoring
+- `llmContextProvider` for custom JSON context injection
+- `availableFunctionNamesProvider` for per-session tool scoping
 - GitHub Packages + Maven Central publish pipeline
 - Sample app with working MainActivity + SampleFunctions
 - Unit tests for core, networking, and ui modules
@@ -29,9 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Kotlin-first runtime for ResolveKit sessions
-- Jetpack Compose  component
--  for full-screen chat
-- KSP-based  annotation for tool functions
+- Jetpack Compose `ResolveKitChatView` component
+- `ResolveKitChatActivity` for full-screen chat
+- KSP-based `@ResolveKit` annotation for tool functions
 - Multi-module architecture (sdk, core, networking, ui, authoring, ksp)
 - HTTP/3-first session event stream
 - Reconnect with in-flight turn replay
