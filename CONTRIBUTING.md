@@ -14,10 +14,11 @@ sdk.dir=/path/to/Android/sdk
 5. If you want to run the sample app against the live backend, add your API key to `local.properties`:
 
 ```properties
-resolvekit.apiKey=iaa_your_key_here
+resolvekit.apiKey=rk_your_key_here
+resolvekit.baseUrl=https://agent.example.com
 ```
 
-You can also export `RESOLVEKIT_API_KEY` instead of writing it to `local.properties`.
+You can also export `RESOLVEKIT_API_KEY` and `RESOLVEKIT_BASE_URL` instead of writing them to `local.properties`.
 
 For local publishing credentials, copy [.env.example](.env.example) to `.env` and fill in the values you need. Use a base64-encoded private key in `SIGNING_KEY_BASE64`. Keep `.env` local only.
 

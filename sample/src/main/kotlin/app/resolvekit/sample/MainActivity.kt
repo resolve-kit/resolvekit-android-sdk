@@ -13,13 +13,14 @@ import app.resolvekit.ui.ResolveKitRuntime
  *
  * Set RESOLVEKIT_API_KEY in your environment (or local.properties) before
  * running:
- *   RESOLVEKIT_API_KEY=iaa_... ./gradlew :sample:installDebug
+ *   RESOLVEKIT_API_KEY=rk_... ./gradlew :sample:installDebug
  */
 class MainActivity : ComponentActivity() {
 
     private val runtime by lazy {
         ResolveKitRuntime(
             configuration = ResolveKitConfiguration(
+                baseUrl = BuildConfig.RESOLVEKIT_BASE_URL,
                 apiKeyProvider = { BuildConfig.RESOLVEKIT_API_KEY.takeIf { it.isNotBlank() } },
                 llmContextProvider = {
                     // Provide custom context to shape LLM responses

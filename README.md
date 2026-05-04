@@ -144,7 +144,7 @@ Gradle will substitute the local modules automatically.
 ```kotlin
 val runtime = ResolveKitRuntime(
     configuration = ResolveKitConfiguration(
-        apiKeyProvider = { "iaa_your_key_here" },
+        apiKeyProvider = { "rk_your_key_here" },
         functions = listOf(GetCurrentTime)
     ),
     context = applicationContext
@@ -164,7 +164,7 @@ startActivity(
     ResolveKitChatActivity.createIntent(
         context = this,
         configuration = ResolveKitConfiguration(
-            apiKeyProvider = { "iaa_your_key_here" },
+            apiKeyProvider = { "rk_your_key_here" },
             functions = listOf(GetCurrentTime)
         )
     )
@@ -179,7 +179,7 @@ supportFragmentManager.beginTransaction()
         R.id.container,
         ResolveKitChatFragment.newInstance(
             ResolveKitConfiguration(
-                apiKeyProvider = { "iaa_your_key_here" },
+                apiKeyProvider = { "rk_your_key_here" },
                 functions = listOf(GetCurrentTime)
             )
         )
@@ -381,7 +381,8 @@ sdk.dir=/path/to/Android/sdk
 3. If you want to run the sample app, also add:
 
 ```properties
-resolvekit.apiKey=iaa_your_key_here
+resolvekit.apiKey=rk_your_key_here
+resolvekit.baseUrl=https://agent.example.com
 ```
 
 4. Select the `sample` run configuration or run:
@@ -484,3 +485,4 @@ This repo includes:
 - `local.properties` is intentionally ignored.
 - Do not commit API keys or publishing credentials.
 - Public API changes should be reflected in this README.
+- `RESOLVEKIT_BASE_URL` (or `resolvekit.baseUrl` in `local.properties`) controls the backend URL used by the sample app.

@@ -60,7 +60,16 @@ class ResolveKitRuntimeTest {
     @Test
     fun `configuration defaults to neutral self-host base URL`() {
         val config = ResolveKitConfiguration(apiKeyProvider = { "test-key" })
-        assertEquals("https://agent.example.com", config.baseUrl)
+        assertEquals(ResolveKitDefaults.fallbackBaseUrl, config.baseUrl)
+    }
+
+    @Test
+    fun `configuration default base URL supports environment override`() {
+        val resolved = ResolveKitDefaults.resolveBaseUrl(
+            envLookup = { null },
+            propertyLookup = { if (it == ResolveKitDefaults.BASE_URL_ENV_KEY) "https://agent.selfhost.example.com" else null }
+        )
+        assertEquals("https://agent.selfhost.example.com", resolved)
     }
 
     @Test

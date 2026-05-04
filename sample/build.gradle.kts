@@ -13,6 +13,9 @@ val localProps = Properties().apply {
 fun apiKey() = System.getenv("RESOLVEKIT_API_KEY")
     ?: localProps.getProperty("resolvekit.apiKey")
     ?: ""
+fun baseUrl() = System.getenv("RESOLVEKIT_BASE_URL")
+    ?: localProps.getProperty("resolvekit.baseUrl")
+    ?: "https://agent.example.com"
 
 android {
     namespace = "app.resolvekit.sample"
@@ -26,6 +29,7 @@ android {
         versionName = "1.0.0"
 
         buildConfigField("String", "RESOLVEKIT_API_KEY", "\"${apiKey()}\"")
+        buildConfigField("String", "RESOLVEKIT_BASE_URL", "\"${baseUrl()}\"")
     }
 
     buildFeatures {

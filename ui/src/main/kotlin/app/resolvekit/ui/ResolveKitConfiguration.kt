@@ -4,6 +4,24 @@ import app.resolvekit.core.AnyResolveKitFunction
 import app.resolvekit.core.JSONObject
 import app.resolvekit.core.ResolveKitFunctionPack
 
+object ResolveKitDefaults {
+    const val BASE_URL_ENV_KEY = "RESOLVEKIT_BASE_URL"
+    const val fallbackBaseUrl = "https://agent.example.com"
+
+    internal fun resolveBaseUrl(
+        envLookup: (String) -> String? = System::getenv,
+        propertyLookup: (String) -> String? = System::getProperty
+    ): String {
+        val configured = sequenceOf(
+            propertyLookup(BASE_URL_ENV_KEY),
+            envLookup(BASE_URL_ENV_KEY)
+        ).firstOrNull { !it.isNullOrBlank() }?.trim()
+        return configured ?: fallbackBaseUrl
+    }
+
+    val baseUrl: String = resolveBaseUrl()
+}
+
 /**
  * Immutable configuration for [ResolveKitRuntime].
  *
@@ -24,7 +42,7 @@ import app.resolvekit.core.ResolveKitFunctionPack
  * @param functionPacks        Grouped tool modules; all functions in each pack are registered.
  */
 data class ResolveKitConfiguration(
-    val baseUrl: String = "https://agent.example.com",
+    val baseUrl: String = ResolveKitDefaults.baseUrl,
     val apiKeyProvider: () -> String?,
     val deviceIdProvider: (() -> String?)? = null,
     val llmContextProvider: () -> JSONObject = { emptyMap() },
