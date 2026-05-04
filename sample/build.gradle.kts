@@ -60,4 +60,10 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
+
+    // AppCompat + Material for Fragment host demo
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.fragment)
 }

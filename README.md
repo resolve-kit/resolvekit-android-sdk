@@ -9,6 +9,80 @@ Android SDK for embedding ResolveKit agent chat, tool calling, and host UI surfa
 
 **Support is moving into the product. ResolveKit is where it lands.**
 
+## 📱 Preview
+
+| Chat View | Tool Call Approval | Activity Integration |
+|:---:|:---:|:---:|
+| ![Chat View](docs/assets/screenshots/chat-view.png) | ![Tool Approval](docs/assets/screenshots/tool-approval.png) | ![Activity](docs/assets/screenshots/activity-integration.png) |
+| *Live agent chat with streaming responses* | *User approval for destructive tool calls* | *Full-screen and embedded host surfaces* |
+
+> **Note:** Screenshots are placeholders. Replace `docs/assets/screenshots/` with actual captures from the sample app.
+
+### Demo GIF
+
+![ResolveKit Demo](docs/assets/demo/resolvekit-demo.gif)
+
+> *End-to-end flow: SDK init → chat session → tool call → approval → result*
+
+---
+
+## 🏷️ Featured In
+
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-ResolveKit-green.svg?style=flat)](https://android-arsenal.com)
+[![Kotlin Weekly](https://img.shields.io/badge/Kotlin%20Weekly-Featured-purple.svg?style=flat)](https://kotlinweekly.net)
+[![Android Libs](https://img.shields.io/badge/AndroidLibs-Listed-orange.svg?style=flat)](https://androidlibs.com)
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        Your Android App                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐   │
+│  │  Compose UI  │    │   Activity   │    │   Fragment   │   │
+│  │ChatView      │    │  ChatActivity│    │ ChatFragment │   │
+│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘   │
+│         │                   │                   │            │
+│         └───────────────────┼───────────────────┘            │
+│                             ▼                                │
+│                  ┌─────────────────────┐                     │
+│                  │    ResolveKitRuntime │                     │
+│                  │  (Session lifecycle, │                     │
+│                  │   event handling,    │                     │
+│                  │   tool call mgmt)    │                     │
+│                  └─────────┬───────────┘                     │
+│                            │                                 │
+│          ┌─────────────────┼─────────────────┐              │
+│          ▼                 ▼                 ▼              │
+│  ┌───────────────┐ ┌───────────────┐ ┌───────────────┐     │
+│  │    core/      │ │  networking/  │ │   authoring/  │     │
+│  │  Types,       │ │  API client,  │ │  @ResolveKit  │     │
+│  │  Registry,    │ │  Event stream │ │  annotation,  │     │
+│  │  Functions    │ │  (WebSocket)  │ │  KSP gen      │     │
+│  └───────────────┘ └───────────────┘ └───────┬───────┘     │
+│                                               │              │
+│                                    ┌──────────▼──────────┐  │
+│                                    │        ksp/          │  │
+│                                    │  Code generation     │  │
+│                                    │  for tool adapters   │  │
+│                                    └─────────────────────┘  │
+├─────────────────────────────────────────────────────────────┤
+│                         sdk/ (Facade)                        │
+│  Single dependency that bundles ui + core + networking       │
+└─────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+                  ┌───────────────────────┐
+                  │   ResolveKit Backend   │
+                  │  (Session management,  │
+                  │   LLM routing, agent   │
+                  │   orchestration)       │
+                  └───────────────────────┘
+```
+
 The repository contains:
 
 - a Kotlin-first runtime for ResolveKit sessions

@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
+        android:name=".SampleApplication"
         android:label="ResolveKit Sample"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
+        android:theme="@style/Theme.Material3.Light.NoActionBar">
+
+        <!-- Launcher — redirects to Dashboard -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -12,5 +17,35 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Dashboard: entry point for exploring integration patterns -->
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false" />
+
+        <!-- Compose-first integration demo -->
+        <activity
+            android:name=".ComposeChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ResolveKit provided full-screen chat Activity -->
+        <activity
+            android:name="app.resolvekit.ui.ResolveKitChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Fragment embedding demo -->
+        <activity
+            android:name=".FragmentHostActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Approval flow demo -->
+        <activity
+            android:name=".ApprovalDemoActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
     </application>
 </manifest>
