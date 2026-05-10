@@ -1,37 +1,33 @@
 # resolvekit-android-sdk
 
-This file is the **table of contents** for coding agents. Keep it short, stable, and current.
+ResolveKit Android SDK — native runtime, UI, and tool function integration for Android.
 
 ## Working Contract
 
-- Humans define goals and constraints.
-- Agents implement code, tests, docs, and CI changes.
-- Repository-local docs are the source of truth.
-- If behavior changes, update docs in the same PR.
+- Humans define API surface and quality bars.
+- Agents implement code, tests, and CI changes.
+- SDK changes must maintain backward compatibility for public APIs.
+- Breaking changes must include migration notes.
+
+## Project Overview
+
+ResolveKit Android SDK provides runtime orchestration, tool calling, and chat UI surfaces for Kotlin apps.
+
+**Tech Stack**: Kotlin 1.9.22, Compose, KSP, OkHttp, kotlinx.serialization
+**Min SDK**: 26 | **Compile SDK**: 36 | **JDK**: 17
+**Packages**: `app.resolvekit:sdk`, `app.resolvekit:authoring`, `app.resolvekit:ksp`
+
+## Agent Skills
+
+This repo ships with integration skills in `.agents/skills/`. Load them when relevant:
+
+- `resolvekit-android-integration` — How to integrate this SDK into an Android project. Covers Maven installation, KSP function authoring, runtime configuration, Compose/Activity/Fragment UI integration, ProGuard rules, theming, and troubleshooting.
+- `resolvekit-agent-instructions` — How AI agents should approach ResolveKit integration. Covers project detection, function design patterns, integration order, and verification.
+
+When a user asks to integrate ResolveKit into their Android project, load `resolvekit-android-integration` and follow its steps.
 
 ## First Read
 
-1. [README.md](README.md) for module model and integration patterns.
-2. [CHANGELOG.md](CHANGELOG.md) for architecture and release knowledge.
-3. [CONTRIBUTING.md](CONTRIBUTING.md) for harness principles.
-
-## Commands
-
-## Source of Truth Layout
-
-- [sdk/](sdk/) public SDK facade artifact.
-- [core/](core/) shared types and contracts.
-- [networking/](networking/) API + stream transport.
-- [ui/](ui/) runtime and chat surfaces.
-- [authoring/](authoring/) annotation API.
-- [ksp/](ksp/) KSP processor.
-- [sample/](sample/) reference app.
-- [docs/INDEX.md](docs/INDEX.md) documentation entry point.
-- [AGENTS.md](AGENTS.md) plan history and tech debt.
-
-## Guardrails
-
-- No secrets in repo ([.env.example](.env.example), signing keys, credentials).
-- Maintain binary compatibility assumptions for public SDK APIs.
-- Prefer small dependency upgrades; coordinated sweeps for major versions.
-- Run `./gradlew test` when changing docs structure.
+1. `build.gradle.kts` for project structure and plugins.
+2. `sdk/`, `core/`, `ui/`, `networking/`, `authoring/`, `ksp/` for module organization.
+3. `sample/` for integration examples.
