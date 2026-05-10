@@ -19,7 +19,14 @@ ResolveKit Android SDK provides runtime orchestration, tool calling, and chat UI
 
 ## Agent Skills
 
-This repo ships with integration skills in `.agents/skills/`. Load them when relevant:
+ResolveKit integration skills are available at https://github.com/resolve-kit/resolvekit-skills
+
+**Quick install:**
+```bash
+curl -sL https://raw.githubusercontent.com/resolve-kit/resolvekit-skills/master/install.sh | bash -s .
+```
+
+**Platform-specific skills:**
 
 - `resolvekit-android-integration` — How to integrate this SDK into an Android project. Covers Maven installation, KSP function authoring, runtime configuration, Compose/Activity/Fragment UI integration, ProGuard rules, theming, and troubleshooting.
 - `resolvekit-agent-instructions` — How AI agents should approach ResolveKit integration. Covers project detection, function design patterns, integration order, and verification.
