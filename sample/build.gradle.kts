@@ -15,7 +15,7 @@ fun apiKey() = System.getenv("RESOLVEKIT_API_KEY")
     ?: ""
 fun baseUrl() = System.getenv("RESOLVEKIT_BASE_URL")
     ?: localProps.getProperty("resolvekit.baseUrl")
-    ?: "https://agent.example.com"
+    ?: "https://agent.resolvekit.app"
 
 android {
     namespace = "app.resolvekit.sample"
@@ -52,11 +52,12 @@ android {
 }
 
 dependencies {
-    implementation(project(":ui"))
+    implementation(project(":sdk"))
     implementation(project(":authoring"))
     ksp(project(":ksp"))
 
     implementation(libs.activity.compose)
+    implementation(libs.fragment.ktx)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)

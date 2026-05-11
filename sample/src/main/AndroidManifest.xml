@@ -10,6 +10,12 @@
 
         <!-- Launcher — redirects to Dashboard -->
         <activity
+            android:name=".EmbeddedChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FragmentChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -15,10 +15,12 @@ sdk.dir=/path/to/Android/sdk
 
 ```properties
 resolvekit.apiKey=rk_your_key_here
-resolvekit.baseUrl=https://agent.example.com
+resolvekit.baseUrl=https://agent.resolvekit.app
 ```
 
 You can also export `RESOLVEKIT_API_KEY` and `RESOLVEKIT_BASE_URL` instead of writing them to `local.properties`.
+You can start from `local.properties.example`, then copy it to `local.properties`.
+The sample app also has an in-app settings card to override host/key for quick managed vs self-hosted testing.
 
 For local publishing credentials, copy [.env.example](.env.example) to `.env` and fill in the values you need. Use a base64-encoded private key in `SIGNING_KEY_BASE64`. Keep `.env` local only.
 

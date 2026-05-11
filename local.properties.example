@@ -1,0 +1,15 @@
+# Copy this file to local.properties and adjust values for your machine.
+# Required for Android Studio/Gradle local builds:
+# sdk.dir=/absolute/path/to/Android/sdk
+
+# Optional sample app connection defaults.
+# You can also edit these directly in the sample app UI.
+
+# Managed ResolveKit host:
+resolvekit.baseUrl=https://agent.resolvekit.app
+
+# Self-hosted example:
+# resolvekit.baseUrl=https://your-backend.example.com
+
+# API key for your ResolveKit app:
+resolvekit.apiKey=rk_your_key_here

@@ -456,14 +456,24 @@ sdk.dir=/path/to/Android/sdk
 
 ```properties
 resolvekit.apiKey=rk_your_key_here
-resolvekit.baseUrl=https://agent.example.com
+resolvekit.baseUrl=https://agent.resolvekit.app
 ```
+
+You can start from [`local.properties.example`](local.properties.example) and copy it to `local.properties`.
 
 4. Select the `sample` run configuration or run:
 
 ```bash
 ./gradlew :sample:installDebug
 ```
+
+The sample app now has a clear two-step test flow:
+- Step 1: configuration screen (host + API key are required before continue)
+- Step 2: capabilities screen with supported tool calls, prompt examples, and one `Open Chat` CTA
+
+After tool calls run in chat, return to the capabilities screen to see updated app state
+(vibe, mascot, confetti counter, laser state). This demonstrates SDK tool calls driving
+visible host-app behavior.
 
 ### Use the SDK source from another Android Studio project
 
@@ -526,7 +536,7 @@ GitHub Actions publishing is defined in `.github/workflows/publish.yml`. GitHub 
 ## Troubleshooting
 
 ### Connection fails with 401
-- Verify your API key starts with `iaa_`
+- Verify your API key starts with `rk_`
 - Check that `baseUrl` points to a running ResolveKit backend
 - Ensure the backend has an app configured for your API key
 
