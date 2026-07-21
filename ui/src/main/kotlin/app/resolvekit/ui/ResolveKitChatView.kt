@@ -45,6 +45,8 @@ fun ResolveKitChatView(
     val messagePlaceholder by runtime.messagePlaceholder.collectAsState()
     val appearanceMode by runtime.appearanceMode.collectAsState()
     val chatTheme by runtime.chatTheme.collectAsState()
+    val isEscalated by runtime.isEscalated.collectAsState()
+    val pendingFeedbackRequest by runtime.pendingFeedbackRequest.collectAsState()
 
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -117,6 +119,10 @@ fun ResolveKitChatView(
                     else -> Unit
                 }
 
+                if (isEscalated) {
+                    ConnectionBanner("Connecting you with a human agent…", palette)
+                }
+
                 // ----- Message list -----
                 LazyColumn(
                     state = listState,
@@ -154,6 +160,14 @@ fun ResolveKitChatView(
                         onApprove = {},
                         onDecline = {},
                         readOnly = true
+                    )
+                }
+
+                if (pendingFeedbackRequest) {
+                    FeedbackPromptCard(
+                        palette = palette,
+                        onRate = { rating -> scope.launch { runtime.submitFeedback(rating) } },
+                        onDismiss = { runtime.dismissFeedbackRequest() }
                     )
                 }
 
@@ -252,12 +266,61 @@ private fun ChatBubble(message: ResolveKitChatMessage, palette: ResolveKitPalett
             color = if (isUser) palette.userBubbleBackground else palette.assistantBubbleBackground,
             modifier = Modifier.widthIn(max = 300.dp)
         ) {
+            Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                if (message.role == ChatMessageRole.HUMAN_AGENT) {
+                    Text(
+                        text = "Support Agent",
+                        color = palette.statusText,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(Modifier.height(2.dp))
+                }
+                Text(
+                    text = message.text,
+                    color = if (isUser) palette.userBubbleText else palette.assistantBubbleText,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FeedbackPromptCard(
+    palette: ResolveKitPaletteColors,
+    onRate: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    Surface(
+        color = palette.toolCardBackground,
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, palette.toolCardBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
             Text(
-                text = message.text,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                color = if (isUser) palette.userBubbleText else palette.assistantBubbleText,
-                style = MaterialTheme.typography.bodyMedium
+                text = "How did we do?",
+                color = palette.titleText,
+                style = MaterialTheme.typography.titleSmall
             )
+            Spacer(Modifier.height(8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                for (rating in 1..5) {
+                    TextButton(onClick = { onRate(rating) }) {
+                        Text(
+                            text = "★",
+                            color = palette.statusText,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = onDismiss) {
+                    Text("Dismiss", color = palette.statusText)
+                }
+            }
         }
     }
 }

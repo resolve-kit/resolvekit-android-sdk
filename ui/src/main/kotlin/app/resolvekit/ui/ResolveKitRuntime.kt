@@ -81,6 +81,15 @@ class ResolveKitRuntime(
     private val _executionLog = MutableStateFlow<List<String>>(emptyList())
     val executionLog: StateFlow<List<String>> = _executionLog.asStateFlow()
 
+    private val _isEscalated = MutableStateFlow(false)
+    val isEscalated: StateFlow<Boolean> = _isEscalated.asStateFlow()
+
+    private val _escalationReason = MutableStateFlow<String?>(null)
+    val escalationReason: StateFlow<String?> = _escalationReason.asStateFlow()
+
+    private val _pendingFeedbackRequest = MutableStateFlow(false)
+    val pendingFeedbackRequest: StateFlow<Boolean> = _pendingFeedbackRequest.asStateFlow()
+
     // -------------------------------------------------------------------------
     // Internal session state
     // -------------------------------------------------------------------------
@@ -189,6 +198,7 @@ class ResolveKitRuntime(
                 val role = when (msg.role) {
                     "user" -> ChatMessageRole.USER
                     "assistant" -> ChatMessageRole.ASSISTANT
+                    "human_agent" -> ChatMessageRole.HUMAN_AGENT
                     else -> return@mapNotNull null
                 }
                 ResolveKitChatMessage(role = role, text = msg.content ?: "")
@@ -244,6 +254,9 @@ class ResolveKitRuntime(
         _toolCallChecklist.value = emptyList()
         _toolCallBatchState.value = ResolveKitToolCallBatchState.IDLE
         _isTurnInProgress.value = false
+        _isEscalated.value = false
+        _escalationReason.value = null
+        _pendingFeedbackRequest.value = false
         sessionId = null
         chatCapabilityToken = null
         eventsUrl = null
@@ -299,6 +312,23 @@ class ResolveKitRuntime(
             _isTurnInProgress.value = false
             _lastError.value = it.message
         }
+    }
+
+    /** Submit a CSAT rating (1-5) for the current session, dismissing the pending feedback prompt. */
+    suspend fun submitFeedback(rating: Int, comment: String? = null) {
+        val sid = sessionId ?: return
+        val tok = chatCapabilityToken ?: return
+        _pendingFeedbackRequest.value = false
+        runCatching {
+            apiClient.submitFeedback(sid, tok, FeedbackRequest(rating = rating, comment = comment))
+        }.onFailure {
+            log("submitFeedback failed: ${it.message}")
+        }
+    }
+
+    /** Dismiss the feedback prompt without submitting a rating. */
+    fun dismissFeedbackRequest() {
+        _pendingFeedbackRequest.value = false
     }
 
     /** Approve all tools in the current batch. Executes them and submits results. */
@@ -496,6 +526,30 @@ class ResolveKitRuntime(
                     _connectionState.value = ResolveKitConnectionState.FAILED
                     _lastError.value = event.message
                 }
+            }
+
+            is app.resolvekit.networking.models.ResolveKitEvent.SessionEscalated -> {
+                lastEventCursor = event.eventId
+                saveEventCursor(event.eventId, sessionId ?: return)
+                _escalationReason.value = event.reason
+                _isEscalated.value = true
+                _isTurnInProgress.value = false
+                currentTurnId = null
+            }
+
+            is app.resolvekit.networking.models.ResolveKitEvent.HumanMessage -> {
+                lastEventCursor = event.eventId
+                saveEventCursor(event.eventId, sessionId ?: return)
+                _messages.value = _messages.value + ResolveKitChatMessage(
+                    role = ChatMessageRole.HUMAN_AGENT,
+                    text = event.text
+                )
+            }
+
+            is app.resolvekit.networking.models.ResolveKitEvent.FeedbackRequested -> {
+                lastEventCursor = event.eventId
+                saveEventCursor(event.eventId, sessionId ?: return)
+                _pendingFeedbackRequest.value = true
             }
 
             is app.resolvekit.networking.models.ResolveKitEvent.Unknown -> {
