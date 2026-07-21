@@ -103,6 +103,7 @@ class ResolveKitRuntime(
     private var eventStreamJob: Job? = null
     private var heartbeatJob: Job? = null
     private var batchCoalesceJob: Job? = null
+    private var feedbackPromptDelayJob: Job? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
     private val lastEventTimeMs = java.util.concurrent.atomic.AtomicLong(0L)
     private val batchMutex = Mutex()
@@ -257,6 +258,7 @@ class ResolveKitRuntime(
         _isEscalated.value = false
         _escalationReason.value = null
         _pendingFeedbackRequest.value = false
+        cancelPendingFeedbackPrompt()
         sessionId = null
         chatCapabilityToken = null
         eventsUrl = null
@@ -300,6 +302,8 @@ class ResolveKitRuntime(
             text = text
         )
         _isTurnInProgress.value = true
+        cancelPendingFeedbackPrompt()
+        _pendingFeedbackRequest.value = false
 
         val requestId = UUID.randomUUID().toString()
         log("Sending message requestId=$requestId")
@@ -319,6 +323,7 @@ class ResolveKitRuntime(
         val sid = sessionId ?: return
         val tok = chatCapabilityToken ?: return
         _pendingFeedbackRequest.value = false
+        cancelPendingFeedbackPrompt()
         runCatching {
             apiClient.submitFeedback(sid, tok, FeedbackRequest(rating = rating, comment = comment))
         }.onFailure {
@@ -329,6 +334,7 @@ class ResolveKitRuntime(
     /** Dismiss the feedback prompt without submitting a rating. */
     fun dismissFeedbackRequest() {
         _pendingFeedbackRequest.value = false
+        cancelPendingFeedbackPrompt()
     }
 
     /** Approve all tools in the current batch. Executes them and submits results. */
@@ -549,7 +555,7 @@ class ResolveKitRuntime(
             is app.resolvekit.networking.models.ResolveKitEvent.FeedbackRequested -> {
                 lastEventCursor = event.eventId
                 saveEventCursor(event.eventId, sessionId ?: return)
-                _pendingFeedbackRequest.value = true
+                scheduleFeedbackPrompt()
             }
 
             is app.resolvekit.networking.models.ResolveKitEvent.Unknown -> {
@@ -752,6 +758,20 @@ class ResolveKitRuntime(
     private fun log(message: String) {
         Log.d("ResolveKit", message)
         _executionLog.value = (_executionLog.value + message).takeLast(200)
+    }
+
+    /** Show the CSAT prompt only after a short pause with no follow-up message. */
+    private fun scheduleFeedbackPrompt() {
+        feedbackPromptDelayJob?.cancel()
+        feedbackPromptDelayJob = scope.launch {
+            delay(6_000)
+            _pendingFeedbackRequest.value = true
+        }
+    }
+
+    private fun cancelPendingFeedbackPrompt() {
+        feedbackPromptDelayJob?.cancel()
+        feedbackPromptDelayJob = null
     }
 
     private fun applySession(session: SessionResponse, clearPendingResults: Boolean) {
