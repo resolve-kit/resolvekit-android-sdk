@@ -541,6 +541,10 @@ class ResolveKitRuntime(
                 _isEscalated.value = true
                 _isTurnInProgress.value = false
                 currentTurnId = null
+                // Suppress any CSAT prompt still pending from the AI's last reply —
+                // it shouldn't surface while the user is waiting on a human handoff.
+                cancelPendingFeedbackPrompt()
+                _pendingFeedbackRequest.value = false
             }
 
             is app.resolvekit.networking.models.ResolveKitEvent.HumanMessage -> {
@@ -555,7 +559,12 @@ class ResolveKitRuntime(
             is app.resolvekit.networking.models.ResolveKitEvent.FeedbackRequested -> {
                 lastEventCursor = event.eventId
                 saveEventCursor(event.eventId, sessionId ?: return)
-                scheduleFeedbackPrompt()
+                if (event.immediate) {
+                    cancelPendingFeedbackPrompt()
+                    _pendingFeedbackRequest.value = true
+                } else {
+                    scheduleFeedbackPrompt()
+                }
             }
 
             is app.resolvekit.networking.models.ResolveKitEvent.Unknown -> {

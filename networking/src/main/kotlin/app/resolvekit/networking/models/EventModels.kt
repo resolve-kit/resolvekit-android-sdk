@@ -53,6 +53,11 @@ data class HumanMessagePayload(
     val text: String
 )
 
+@Serializable
+data class FeedbackRequestedPayload(
+    val immediate: Boolean = false
+)
+
 sealed class ResolveKitEvent {
     data class TextDelta(
         val eventId: String,
@@ -92,7 +97,8 @@ sealed class ResolveKitEvent {
     ) : ResolveKitEvent()
 
     data class FeedbackRequested(
-        val eventId: String
+        val eventId: String,
+        val immediate: Boolean
     ) : ResolveKitEvent()
 
     data class Unknown(

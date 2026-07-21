@@ -124,7 +124,10 @@ class ResolveKitEventStreamClient(
                 ResolveKitEvent.HumanMessage(envelope.eventId, p.messageId, p.text)
             }.getOrNull()
 
-            "feedback_requested" -> ResolveKitEvent.FeedbackRequested(envelope.eventId)
+            "feedback_requested" -> runCatching {
+                val p = json.decodeFromJsonElement<FeedbackRequestedPayload>(envelope.payload)
+                ResolveKitEvent.FeedbackRequested(envelope.eventId, p.immediate)
+            }.getOrDefault(ResolveKitEvent.FeedbackRequested(envelope.eventId, immediate = false))
 
             else -> ResolveKitEvent.Unknown(envelope.eventId, envelope.type)
         }
