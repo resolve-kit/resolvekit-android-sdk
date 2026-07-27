@@ -92,6 +92,13 @@ class ResolveKitAPIClient(
         request: ToolResultRequest
     ): ToolResultResponse = post("/v1/sessions/$sessionId/tool-results", request, token)
 
+    /** POST /v1/sessions/{id}/feedback — submit a CSAT rating (1-5). */
+    suspend fun submitFeedback(
+        sessionId: String,
+        token: String,
+        request: FeedbackRequest
+    ): FeedbackResponse = post("/v1/sessions/$sessionId/feedback", request, token)
+
     // -------------------------------------------------------------------------
     // Internal helpers
     // -------------------------------------------------------------------------

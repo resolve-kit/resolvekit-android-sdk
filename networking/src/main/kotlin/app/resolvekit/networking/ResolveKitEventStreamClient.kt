@@ -114,6 +114,21 @@ class ResolveKitEventStreamClient(
                 ResolveKitEvent.ServerError(envelope.eventId, p.code, p.message, p.recoverable)
             }.getOrNull()
 
+            "session_escalated" -> runCatching {
+                val p = json.decodeFromJsonElement<SessionEscalatedPayload>(envelope.payload)
+                ResolveKitEvent.SessionEscalated(envelope.eventId, p.reason)
+            }.getOrNull()
+
+            "human_message" -> runCatching {
+                val p = json.decodeFromJsonElement<HumanMessagePayload>(envelope.payload)
+                ResolveKitEvent.HumanMessage(envelope.eventId, p.messageId, p.text)
+            }.getOrNull()
+
+            "feedback_requested" -> runCatching {
+                val p = json.decodeFromJsonElement<FeedbackRequestedPayload>(envelope.payload)
+                ResolveKitEvent.FeedbackRequested(envelope.eventId, p.immediate)
+            }.getOrDefault(ResolveKitEvent.FeedbackRequested(envelope.eventId, immediate = false))
+
             else -> ResolveKitEvent.Unknown(envelope.eventId, envelope.type)
         }
     }

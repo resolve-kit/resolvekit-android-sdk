@@ -6,7 +6,10 @@
     <application
         android:name=".SampleApplication"
         android:label="ResolveKit Sample"
-        android:theme="@style/Theme.Material3.Light.NoActionBar">
+        android:theme="@style/Theme.Material3.Light.NoActionBar"
+        android:usesCleartextTraffic="true">
+        <!-- Allows plain HTTP for staging/local dev environments, matching the
+             iOS sample's NSAllowsArbitraryLoads exception for the same reason. -->
 
         <!-- Launcher — redirects to Dashboard -->
         <activity

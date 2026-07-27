@@ -42,6 +42,22 @@ data class ServerErrorPayload(
     val recoverable: Boolean = true
 )
 
+@Serializable
+data class SessionEscalatedPayload(
+    val reason: String
+)
+
+@Serializable
+data class HumanMessagePayload(
+    @SerialName("message_id") val messageId: String,
+    val text: String
+)
+
+@Serializable
+data class FeedbackRequestedPayload(
+    val immediate: Boolean = false
+)
+
 sealed class ResolveKitEvent {
     data class TextDelta(
         val eventId: String,
@@ -67,6 +83,22 @@ sealed class ResolveKitEvent {
         val code: String,
         val message: String,
         val recoverable: Boolean
+    ) : ResolveKitEvent()
+
+    data class SessionEscalated(
+        val eventId: String,
+        val reason: String
+    ) : ResolveKitEvent()
+
+    data class HumanMessage(
+        val eventId: String,
+        val messageId: String,
+        val text: String
+    ) : ResolveKitEvent()
+
+    data class FeedbackRequested(
+        val eventId: String,
+        val immediate: Boolean
     ) : ResolveKitEvent()
 
     data class Unknown(

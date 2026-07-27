@@ -1,8 +1,10 @@
 package app.resolvekit.sample
 
 import android.app.Application
+import app.resolvekit.core.AnyResolveKitFunction
 import app.resolvekit.core.JSONValue
 import app.resolvekit.core.ResolveKitFunctionPack
+import app.resolvekit.core.ResolveKitPlatform
 import app.resolvekit.ui.ResolveKitConfiguration
 
 /**
@@ -65,7 +67,8 @@ class SampleApplication : Application() {
  * This pack bundles utility functions for the sample app.
  */
 object SampleFunctionPack : ResolveKitFunctionPack {
-    override val id = "sample_utilities"
+    override val packName = "sample_utilities"
+    override val supportedPlatforms = listOf(ResolveKitPlatform.ANDROID)
     override val functions = listOf(EchoMessageAdapterHolder)
 }
 
@@ -81,7 +84,7 @@ object EchoMessageAdapterHolder : AnyResolveKitFunction {
     // See SampleFunctions.kt for the @ResolveKit annotation on EchoMessage.
     override val resolveKitName = "echo_message"
     override val resolveKitDescription = "Echoes back the provided message"
-    override val resolveKitParametersSchema: Map<String, Any> = mapOf(
+    override val resolveKitParametersSchema: app.resolvekit.core.JSONObject = mapOf(
         "type" to JSONValue.String("object"),
         "properties" to JSONValue.Object(mapOf(
             "message" to JSONValue.Object(mapOf("type" to JSONValue.String("string")))

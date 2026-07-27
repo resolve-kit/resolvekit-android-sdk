@@ -3,7 +3,7 @@ package app.resolvekit.ui.models
 import java.util.Date
 import java.util.UUID
 
-enum class ChatMessageRole { USER, ASSISTANT, SYSTEM }
+enum class ChatMessageRole { USER, ASSISTANT, SYSTEM, HUMAN_AGENT }
 
 data class ResolveKitChatMessage(
     val id: UUID = UUID.randomUUID(),

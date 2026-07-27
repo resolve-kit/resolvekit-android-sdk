@@ -13,7 +13,7 @@ ResolveKit Android SDK — native runtime, UI, and tool function integration for
 
 ResolveKit Android SDK provides runtime orchestration, tool calling, and chat UI surfaces for Kotlin apps.
 
-**Tech Stack**: Kotlin 1.9.22, Compose, KSP, OkHttp, kotlinx.serialization
+**Tech Stack**: Kotlin 1.9.25, Compose, KSP, OkHttp, kotlinx.serialization
 **Min SDK**: 26 | **Compile SDK**: 36 | **JDK**: 17
 **Packages**: `app.resolvekit:sdk`, `app.resolvekit:authoring`, `app.resolvekit:ksp`
 
@@ -32,6 +32,11 @@ curl -sL https://raw.githubusercontent.com/resolve-kit/resolvekit-skills/master/
 - `resolvekit-agent-instructions` — How AI agents should approach ResolveKit integration. Covers project detection, function design patterns, integration order, and verification.
 
 When a user asks to integrate ResolveKit into their Android project, load `resolvekit-android-integration` and follow its steps.
+
+## Documentation
+
+- [Documentation Index](docs/INDEX.md) — full map of durable docs, execution plans, and tech debt tracking.
+- [Agent-First Harness Notes](docs/agent-first/README.md) — how this repo's agent-first doc structure is enforced in CI.
 
 ## First Read
 
