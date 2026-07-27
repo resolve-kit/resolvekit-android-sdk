@@ -79,6 +79,20 @@ data class ToolResultResponse(
 )
 
 @Serializable
+data class FeedbackRequest(
+    val rating: Int,
+    val comment: String? = null
+)
+
+@Serializable
+data class FeedbackResponse(
+    val id: String,
+    @SerialName("session_id") val sessionId: String,
+    val rating: Int,
+    val comment: String? = null
+)
+
+@Serializable
 data class SessionLocalization(
     val locale: String,
     @SerialName("chat_title") val chatTitle: String,

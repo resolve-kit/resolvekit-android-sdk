@@ -38,7 +38,10 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.8"
+        // Must track the Compose-Kotlin compatibility map for the Kotlin
+        // version pinned in gradle/libs.versions.toml (currently 1.9.25).
+        // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
 
     compileOptions {
