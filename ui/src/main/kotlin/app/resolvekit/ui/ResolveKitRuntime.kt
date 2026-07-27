@@ -773,7 +773,7 @@ class ResolveKitRuntime(
     private fun scheduleFeedbackPrompt() {
         feedbackPromptDelayJob?.cancel()
         feedbackPromptDelayJob = scope.launch {
-            delay(6_000)
+            delay(15_000)
             _pendingFeedbackRequest.value = true
         }
     }
