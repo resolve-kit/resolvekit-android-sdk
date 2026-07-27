@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import app.resolvekit.ui.ResolveKitChatActivity
 
 /**
  * Dashboard activity showcasing all integration patterns available in the
