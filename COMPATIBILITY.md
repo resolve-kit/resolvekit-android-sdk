@@ -10,11 +10,11 @@
 
 | Library | Version |
 | --- | --- |
-| Kotlin | 1.9.22 |
+| Kotlin | 1.9.25 |
 | Compose BOM | 2024.02.00 |
 | OkHttp | 4.12.0 |
 | Coroutines | 1.7.3 |
-| KSP | 1.9.22-1.0.17 |
+| KSP | 1.9.25-1.0.20 |
 | Kotlinx Serialization | 1.6.3 |
 | Lifecycle | 2.10.0 |
 | Activity Compose | 1.8.2 |

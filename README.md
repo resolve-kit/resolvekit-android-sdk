@@ -133,7 +133,7 @@ For most apps, depend on `sdk`. It brings in the default ResolveKit runtime and 
 
 ```kotlin
 dependencies {
-    implementation("app.resolvekit:sdk:1.0.1")
+    implementation("app.resolvekit:sdk:1.1.0")
 }
 ```
 
@@ -145,9 +145,9 @@ plugins {
 }
 
 dependencies {
-    implementation("app.resolvekit:sdk:1.0.1")
-    implementation("app.resolvekit:authoring:1.0.1")
-    ksp("app.resolvekit:ksp:1.0.1")
+    implementation("app.resolvekit:sdk:1.1.0")
+    implementation("app.resolvekit:authoring:1.1.0")
+    ksp("app.resolvekit:ksp:1.1.0")
 }
 ```
 
@@ -203,9 +203,9 @@ Then depend on the project coordinates normally:
 
 ```kotlin
 dependencies {
-    implementation("app.resolvekit:sdk:1.0.1")
-    implementation("app.resolvekit:authoring:1.0.1")
-    ksp("app.resolvekit:ksp:1.0.1")
+    implementation("app.resolvekit:sdk:1.1.0")
+    implementation("app.resolvekit:authoring:1.1.0")
+    ksp("app.resolvekit:ksp:1.1.0")
 }
 ```
 
